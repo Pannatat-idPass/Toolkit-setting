@@ -174,18 +174,30 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <!-- Modal body -->
-      <div *ngIf="_showDetail" class="modal-body" style="max-height: 600px; overflow: scroll;">
-        <div>outTopicName: <h3>{{_showDetail['outTopicName']|| _showDetail['outSubTopicName']}}</h3>
+      <div *ngIf="_showDetail" class="modal-body row" style="max-height: 600px; overflow: scroll;">
+        <div class="col-8 text-center">outTopicName : <h3>{{_showDetail['outTopicName']|| _showDetail['outSubTopicName']}}</h3></div>
+        <div *ngIf="!!_showDetail['imgBase64']" class="col-4 text-center"><img [src]="byPass(_showDetail)" width="60px" alt=""></div>
+        <div *ngIf="!!_showDetail['image']" class="col-4 text-center"><img src="{{_showDetail['image']}}" width="60px" alt=""></div>
+        <div class="col-12">
+          <input type="text" [value]="_showDetail['json']" #userinput>
+          <button [ngxClipboard]="userinput" value="click to copy">Copy</button>
+          <button value="" (click)="upDateOpen = false">JSON</button>
+          <button value="" (click)="UpdateMenuTopic();upDateOpen = true">VIEW</button>
         </div>
-        <input type="text" [value]="_showDetail['json']" #userinput>
-        <button [ngxClipboard]="userinput" value="click to copy">Copy</button>
-        <button value="" (click)="upDateOpen = false">JSON</button>
-        <button value="" (click)="UpdateMenuTopic();upDateOpen = true">VIEW</button>
+
         <div *ngIf="upDateOpen">
           <div *ngFor="let data of MenuKey;let i = index;" class="row">
             <div class="mt-2 col-4">{{i+1}}. {{data}}</div>
             <div class="mt-2 col-8 ">
-              <input  *ngIf="data !== 'rules'" [disabled]="!edit" [ngClass]="{'editCss': !edit}" style="width: 100%;" type="text" name=" " [value]="fillterMenuKey(data)" id="">
+              <input *ngIf="!checkTypeOf(data) && data !== 'rules'" [disabled]="!edit" [ngClass]="{'editCss': !edit}"
+                style="width: 100%;" type="text" name=" " [value]="fillterMenuKey(data)" id="">
+              <!-- <input  *ngIf="checkTypeOf(data) && data !== 'rules'" [disabled]="!edit" [ngClass]="{'editCss': !edit}" style="width: 100%;" type="radio" name=" " [value]="fillterMenuKey(data)" id=""> -->
+              
+              <div class="form-check form-switch" *ngIf="checkTypeOf(data) && data !== 'rules'">
+                <input class="form-check-input"  [disabled]="!edit"
+                  [ngClass]="{'editCss': !edit}" type="checkbox"  id="mySwitch" [name]="data"
+                  [value]="fillterMenuKey(data)" checked>
+              </div>
 
               <div *ngIf="data == 'rules'">
                 <div *ngFor="let role of ObjectReturn(_showDetail[data][0])">
@@ -193,23 +205,26 @@
                     <b>{{role}}</b>
                     <div class="ml-2" *ngFor="let typexx of ObjectReturn(_showDetail[data][0][role][0]);let i = index;">
                       <span style="margin-left: 1rem;margin-right: 15px;">{{i+1}}. {{typexx}}</span>
-                      <div style="float: right;">[<span >{{_showDetail[data][0][role][0][typexx]}}</span>]</div>
+                      <div style="float: right;">[<span>{{_showDetail[data][0][role][0][typexx]}}</span>]</div>
                     </div>
                   </div>
                   <div *ngIf="role == 'roleUser' && edit ">
-                    <b>{{role}}</b>:<input type="text" style="height: auto; width: 100%;overflow: scroll;" [value]="isJSON(_showDetail[data][0][role][0])" name="" id="">
+                    <b>{{role}}</b>:<input type="text" style="height: auto; width: 100%;overflow: scroll;"
+                      [value]="isJSON(_showDetail[data][0][role][0])" name="" id="">
                   </div>
 
                   <div *ngIf="role == 'location' && !edit">
                     <b>{{role}}</b>
                     <div style="max-height: 200px; overflow: scroll;" class="row">
-                      <div class="col-3"  style="height: auto; width: 100%;" *ngFor="let type of _showDetail[data][0][role];let i = index;">
-                        <div >{{i+1}}. {{type}}</div>
+                      <div class="col-3" style="height: auto; width: 100%;"
+                        *ngFor="let type of _showDetail[data][0][role];let i = index;">
+                        <div>{{i+1}}. {{type}}</div>
                       </div>
                     </div>
                   </div>
                   <div *ngIf="role == 'location' && edit ">
-                    <b>{{role}}</b>:<input type="text" style="height: auto; width: 100%;overflow: scroll;" [value]="isJSON(_showDetail[data][0][role])" name="" id="">
+                    <b>{{role}}</b>:<input type="text" style="height: auto; width: 100%;overflow: scroll;"
+                      [value]="isJSON(_showDetail[data][0][role])" name="" id="">
                   </div>
 
                 </div>
@@ -223,12 +238,17 @@
         </div>
       </div>
       <div class="modal-footer">
-          <button *ngIf="!edit && upDateOpen"type="button" class="btn btn-warning"  (click)="edit = !edit">แก้ไข้</button>
-          <button *ngIf="edit && upDateOpen" type="button" disabled class="btn btn-success">ต้องการแก้ไข้ข้อมูล</button>
-          <button *ngIf="edit && upDateOpen" type="button" class="btn btn-danger ml-2" (click)="edit = !edit">ไม่ต้องการ</button>
+        <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-warning" (click)="edit = !edit">แก้ไข</button>
+        <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-danger"  (click)="setTimeout();deleteMenu = !deleteMenu">Delete</button>
+
+        <button *ngIf="edit && upDateOpen" type="button" [disabled]="countDel" class="btn btn-success">ยืนยันการแก้ไข</button>
+        <button *ngIf="edit && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="edit = !edit">ยกเลิก</button>
         <!-- </div> -->
-        
-        <button *ngIf="!edit"type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="!upDateOpen">Close</button>
+        <button *ngIf="deleteMenu && upDateOpen" type="button" class="btn btn-success" (click)="deleteMenuTopic()">ยืนยันการลบเมนู</button>
+        <button *ngIf="deleteMenu && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="deleteMenu = !deleteMenu">ยกเลิก</button>
+
+        <button *ngIf="!edit && !deleteMenu" type="button" class="btn btn-secondary" #closebutton data-bs-dismiss="modal"
+          (click)="!upDateOpen">Close</button>
       </div>
     </div>
   </div>

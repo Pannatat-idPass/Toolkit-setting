@@ -14,7 +14,8 @@ import { ApiListService } from 'src/app/service/api-list.service'
 // }
 export class AppComponent {
   title = 'setting-api';
-  token: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpNVE1DUzAxIiwidGltZXN0YW1wIjoiMjAyMDAyMTcxNTE4IiwibG9jYXRpb25Db2RlIjoiMTAwNjAyMCIsImVtYWlsIjoiIiwiZmlyc3RuYW1lIjoiIiwibGFzdG5hbWUiOiIiLCJzaGFyZWRVc2VyIjoiSk1UTUNTMDEiLCJ1c2VyVHlwZSI6IkFTUCIsInJvbGUiOiJBU1AiLCJjaGFubmVsVHlwZSI6InNmZi13ZWIiLCJhc2NDb2RlIjoiIiwibW9iaWxlTm8iOiIiLCJpYXQiOjE1MjU0MzgzNTAsImV4cCI6MTkyODAzMDM1MH0.C-ZgIe7DrBrNQsMER8b9q_0VV3OVxSet1taBzNKyUqQ'
+  // token: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpNVE1DUzAxIiwidGltZXN0YW1wIjoiMjAyMDAyMTcxNTE4IiwibG9jYXRpb25Db2RlIjoiMTAwNjAyMCIsImVtYWlsIjoiIiwiZmlyc3RuYW1lIjoiIiwibGFzdG5hbWUiOiIiLCJzaGFyZWRVc2VyIjoiSk1UTUNTMDEiLCJ1c2VyVHlwZSI6IkFTUCIsInJvbGUiOiJBU1AiLCJjaGFubmVsVHlwZSI6InNmZi13ZWIiLCJhc2NDb2RlIjoiIiwibW9iaWxlTm8iOiIiLCJpYXQiOjE1MjU0MzgzNTAsImV4cCI6MTkyODAzMDM1MH0.C-ZgIe7DrBrNQsMER8b9q_0VV3OVxSet1taBzNKyUqQ'
+  token: string = 'TEST'
   // api:string ='api/newlogin/queryMenuTopicLanding'
   // api:string ='https://dev-mychannel.cdc.ais.th/api/newlogin/queryMenuTopicLanding'
   dataList = []
@@ -30,10 +31,11 @@ export class AppComponent {
   showChanneltype = []
   roleKey = [];
   menuSubname = []
-  subInsideList:any = []
+  subInsideList: any = []
   MenuKey = []
-  subName:any
-  edit:boolean = false;
+  subName: any
+  edit: boolean = false;
+  deleteMenu: boolean = false;
   roleList = ['BACKOFFICEAIS', 'BACKOFFICECSS', 'AISSHOP', 'ASP', 'TELEWIZ', 'BACKOFFICEAIS', 'AISBUDDYEXCLUSIVE', 'RETAILCHAIN', 'AISMINICORNER', 'PCBRANDAIS']
   channelTypeList = ['SFF-WEB', 'MYCHANNEL-APP']
   locationList = ['1100', '1111']
@@ -42,10 +44,10 @@ export class AppComponent {
   Enviroment: any
   _channel: any = 'Select Role'
   _channelType: any = 'channelType(All)'
-  _showDetail:any = [];
-  errorMessenger:string = '';
-
-  upDateOpen:boolean = false;
+  _showDetail: any = [];
+  errorMessenger: string = '';
+  countDel:boolean = true;
+  upDateOpen: boolean = false;
   constructor(
     public ApiListService: ApiListService,
     private fb: FormBuilder,
@@ -101,8 +103,8 @@ export class AppComponent {
         }
       })
       this.dataList = this.dataList.sort((a, b) => a['priority'] - b['priority']);
-    }).catch((res)=>{
-      this.dataList = []      
+    }).catch((res) => {
+      this.dataList = []
       this.errorMessenger = JSON.stringify(res.error)
     })
 
@@ -119,7 +121,7 @@ export class AppComponent {
       })
       this.ListSub = this.dataListSub.sort((a, b) => a['priority'] - b['priority']);
 
-    }).catch((res)=>{
+    }).catch((res) => {
       console.log(res.error);
       this.dataListSub = []
       this.ListSub = []
@@ -225,10 +227,10 @@ export class AppComponent {
     }
   }
 
-  filterSubGroup(velueSub:any,res:any){
-    console.log('sub',velueSub);
-    console.log('res',res);
-    
+  filterSubGroup(velueSub: any, res: any) {
+    console.log('sub', velueSub);
+    console.log('res', res);
+
     let channelTypeByRole = false;
     let location = false;
     let checkGroup = false
@@ -268,20 +270,20 @@ export class AppComponent {
         }
       });
     }
-    console.log('channelTypeByRole',channelTypeByRole);
-    
-    if(channelTypeByRole) {
-     console.log('checkGroup',res['topicGroup']);
-     console.log('checkGroup res',velueSub);
+    console.log('channelTypeByRole', channelTypeByRole);
 
-     if(res['topicGroup'] === velueSub){
-      checkGroup =  true
-     } else {
-      checkGroup = false
-     }
+    if (channelTypeByRole) {
+      console.log('checkGroup', res['topicGroup']);
+      console.log('checkGroup res', velueSub);
+
+      if (res['topicGroup'] === velueSub) {
+        checkGroup = true
+      } else {
+        checkGroup = false
+      }
     }
-    console.log('location && channelTypeByRole && checkGroup',location && channelTypeByRole && checkGroup);
-    
+    console.log('location && channelTypeByRole && checkGroup', location && channelTypeByRole && checkGroup);
+
     if (location && channelTypeByRole && checkGroup) {
       return true
     } else {
@@ -307,7 +309,7 @@ export class AppComponent {
     //     let mix = []
     //     mix = res
     //     console.log('mix',mix);
-        
+
     //     this._showDetail.push(mix)
     //     console.log('_showDetail', this._showDetail);
     //     // console.log('cha', this._showDetail['roleuser'],'===',res);
@@ -320,61 +322,61 @@ export class AppComponent {
     // })
   }
 
-  open(){
+  open() {
     this.errorMessenger = '';
   }
 
-  showSubTopic(velue:any){
-    this.ListSub  =[]
-    this.ListSub  = this.dataListSub;
+  showSubTopic(velue: any) {
+    this.ListSub = []
+    this.ListSub = this.dataListSub;
     this.subInsideList = []
-    let SubTopic:any = []
-    if(this.ListSub.length > 0) {
-      this.ListSub.forEach((res)=>{
-        if(this.filterSubGroup(velue,res)){
+    let SubTopic: any = []
+    if (this.ListSub.length > 0) {
+      this.ListSub.forEach((res) => {
+        if (this.filterSubGroup(velue, res)) {
           SubTopic.push(res)
         }
       })
       this.ListSub = SubTopic
-      console.log('SubTopic',SubTopic);
+      console.log('SubTopic', SubTopic);
     } else {
       this.ListSub = []
     }
-      
+
     // this.dataListSub = data
   }
 
-  dropSub(dataGroup:any){
+  dropSub(dataGroup: any) {
     this.subInsideList = []
     let data = []
-    console.log('dataGroup',dataGroup);
+    console.log('dataGroup', dataGroup);
     this.subName = dataGroup
     this.menuSubname = dataGroup['menus']
-     this.menuSubname.forEach((res)=>{
-        console.log('res.menus',res);
-        if(this.filterData(res)){
-          this.subInsideList.push(res)
-        }
-      })
-      console.log('subsub',this.subInsideList);
+    this.menuSubname.forEach((res) => {
+      console.log('res.menus', res);
+      if (this.filterData(res)) {
+        this.subInsideList.push(res)
+      }
+    })
+    console.log('subsub', this.subInsideList);
   }
 
   UpdateMenuTopic() {
     this.edit = false;
     this.MenuKey = []
     // if(!this.upDateOpen){
-      // console.log('this._showDetail',this._showDetail);
-      let data:any = Object.keys(this._showDetail)
-      this.MenuKey = data
-      // console.log('data',this.MenuKey);
+    // console.log('this._showDetail',this._showDetail);
+    let data: any = Object.keys(this._showDetail)
+    this.MenuKey = data
+    // console.log('data',this.MenuKey);
     // }
-      
+
   }
 
-  fillterMenuKey(data:any){
+  fillterMenuKey(data: any) {
     // console.log(this._showDetail['outTopicName']);
-    
-    if(data == 'rules'){
+
+    if (data == 'rules') {
       let velue = []
       velue = Object.keys(this._showDetail[data][0])
       return velue
@@ -384,22 +386,41 @@ export class AppComponent {
     }
   }
 
-  ObjectReturn(data:any){
-    console.log('ObjectReturn',data );
-  
+  ObjectReturn(data: any) {
+    // console.log('ObjectReturn',data );
     let velue = []
     velue = Object.keys(data)
-    console.log('velue',velue);
-    
+    // console.log('velue',velue);
     return velue
   }
 
-  isJSON(str:string) {
+  isJSON(str: string) {
     try {
-        return JSON.stringify(str)
+      return JSON.stringify(str)
     } catch (e) {
-        return false;
+      return false;
     }
+  }
+  checkTypeOf(velue: any) {
+    // console.log('typeof(str)',typeof(this._showDetail[velue]),'velue',velue);
+    if (typeof (this._showDetail[velue]) === 'boolean') {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  deleteMenuTopic() {
+    console.log('Delete', 'ID', this._showDetail['_id'], 'Name', this._showDetail['outTopicName']);
+    this.getDataMenu()
+    this.deleteMenu = false;
+  }
+
+
+
+  setTimeout(){
+    setTimeout(()=>{                           // <<<---using ()=> syntax
+      this.countDel = false;
+  }, 3000);
+  }
 }
-}
-// ['rules'][0]['location']
