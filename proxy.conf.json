@@ -1,0 +1,14 @@
+{
+  "/api": {
+
+    "target": "https://sit-mychannel.cdc.ais.th",
+
+    "secure": false,
+
+    "changeOrigin": true
+  },
+  "/content": {
+    "target": "http://110.49.202.163/mychannel/pvt",
+    "secure": false
+  }
+}
