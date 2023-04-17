@@ -241,10 +241,10 @@
         <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-warning" (click)="edit = !edit">แก้ไข</button>
         <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-danger"  (click)="setTimeout();deleteMenu = !deleteMenu">Delete</button>
 
-        <button *ngIf="edit && upDateOpen" type="button" [disabled]="countDel" class="btn btn-success">ยืนยันการแก้ไข</button>
+        <button *ngIf="edit && upDateOpen" type="button" disabled  class="btn btn-success">ยืนยันการแก้ไข</button>
         <button *ngIf="edit && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="edit = !edit">ยกเลิก</button>
         <!-- </div> -->
-        <button *ngIf="deleteMenu && upDateOpen" type="button" class="btn btn-success" (click)="deleteMenuTopic()">ยืนยันการลบเมนู</button>
+        <button *ngIf="deleteMenu && upDateOpen" type="button" [disabled]="countDel" class="btn btn-success" (click)="deleteMenuTopic()">ยืนยันการลบเมนู</button>
         <button *ngIf="deleteMenu && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="deleteMenu = !deleteMenu">ยกเลิก</button>
 
         <button *ngIf="!edit && !deleteMenu" type="button" class="btn btn-secondary" #closebutton data-bs-dismiss="modal"

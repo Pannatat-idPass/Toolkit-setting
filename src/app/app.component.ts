@@ -419,6 +419,7 @@ export class AppComponent {
 
 
   setTimeout(){
+    this.countDel = true
     setTimeout(()=>{                           // <<<---using ()=> syntax
       this.countDel = false;
   }, 3000);
