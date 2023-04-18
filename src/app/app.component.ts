@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup , FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ApiListService } from 'src/app/service/api-list.service'
 // import { Clipboard } from '@angular/cdk/clipboard';
@@ -18,7 +18,7 @@ export class AppComponent {
   token: string = 'TEST'
   // api:string ='api/newlogin/queryMenuTopicLanding'
   // api:string ='https://dev-mychannel.cdc.ais.th/api/newlogin/queryMenuTopicLanding'
-  dataList = []
+  dataList:any = []
   dataListSub = []
   ListSub = []
   objectList = []
@@ -33,6 +33,7 @@ export class AppComponent {
   menuSubname = []
   subInsideList: any = []
   MenuKey = []
+  fromUpdate = []
   subName: any
   edit: boolean = false;
   deleteMenu: boolean = false;
@@ -66,7 +67,37 @@ export class AppComponent {
     });
 
     this.myFormAddTopic = this.fb.group({
-      roleUser:''
+      // roleUser:new FormControl(''),
+      // location:new FormControl(''),
+      // rules:new FormControl(''),
+      // keywords:new FormControl(''),
+      // _id:new FormControl(''),
+      // outTopicName:new FormControl(''),
+      // outTopicId:new FormControl(''),
+      // outTopicGroup:new FormControl(''),
+      // priority:new FormControl(''),
+      // imgBase64:new FormControl(''),
+      // isActive:new FormControl(''),
+      // isRedirect:new FormControl(''),
+      // function:new FormControl(''),
+      // outUrl:new FormControl(''),
+      // json:new FormControl(''),
+      roleUser:'',
+      location:'',
+      rules:'',
+      keywords:'',
+      _id:'',
+      outTopicName:'',
+      outTopicId:'',
+      outTopicGroup:'',
+      priority:'',
+      imgBase64:'',
+      isActive:new FormControl('', Validators.required),
+      isRedirect:new FormControl('', Validators.required),
+      function:'',
+      outUrl:'',
+      json:'',
+      __v:''
     });
 
     this.getDataMenuAll()
@@ -87,27 +118,26 @@ export class AppComponent {
     this.objectList = []
     this.objecSubtList = []
     this.subInsideList = []
-    // console.log(this.myForm.value.AccessToken);
-    // console.log(this.myForm.value.Enviroment);
-    // console.log(this.myForm.value.Roleuser);
-    // console.log(this.myForm.value.channelType);
-    // console.log(this.myForm.value.locationCode);
-    //  this.AccessToken = this.myForm.value.AccessToken;
-    //  this.Enviroment = this.myForm.value.Enviroment
-    //  this.Enviroment = this.myForm.value.channelType
-    //  if(this.AccessToken && this.Enviroment){
     this.ApiListService.queryMenu().then((res: any) => {
       this.objectList = res.data
-      this.objectList.forEach((data) => {
-        // console.log('OUT',data['outTopicName']);
-        if (data['priority'] && data['isActive']) {
-          if (this.filterData(data) === true) {
-            console.log('filterData', this.filterData(data) === true);
-            this.dataList.push(data);
+      // console.log('this.objectList',this.objectList);
+        this.objectList.forEach((data:any) => {
+          console.log('OUT',data['outTopicName']);
+          try {
+            if (data.priority && data.isActive) {
+              if (this.filterData(data) === true) {
+                console.log('filterData', this.filterData(data) === true);
+                this.dataList.push(data);
+              }
+            }
+          } catch(err:any){
+            console.log('catch',data['outTopicName']);
           }
-        }
-      })
-      this.dataList = this.dataList.sort((a, b) => a['priority'] - b['priority']);
+        })
+
+        console.log('this.dataList',this.dataList);
+        this.dataList = this.dataList.sort((a:any, b:any) => a['priority'] - b['priority']);
+      
     }).catch((res) => {
       this.dataList = []
       this.errorMessenger = JSON.stringify(res.error)
@@ -125,7 +155,8 @@ export class AppComponent {
         }
       })
       this.ListSub = this.dataListSub.sort((a, b) => a['priority'] - b['priority']);
-
+      console.log('this.ListSub',this.ListSub);
+      
     }).catch((res) => {
       console.log(res.error);
       this.dataListSub = []
@@ -149,7 +180,7 @@ export class AppComponent {
           this.dataList.push(data);
         }
       })
-      this.dataList = this.dataList.sort((a, b) => a['priority'] - b['priority']);
+      this.dataList = this.dataList.sort((a:any, b:any) => a['priority'] - b['priority']);
     })
     this.ApiListService.queryMenuSub().then((res: any) => {
       this.objecSubtList = res.data
@@ -192,7 +223,7 @@ export class AppComponent {
       }
       if (val.toUpperCase() === "ALL" || val === this.myForm.value.locationCode || this.myForm.value.locationCode === "ALL") {
         // console.log('location ALL)(',location);
-        console.log('location', val.toUpperCase() === "ALL");
+        // console.log('location', val.toUpperCase() === "ALL");
 
         // console.log('val === this.myForm.value.locationCode',val === this.myForm.value.locationCode);
 
@@ -203,27 +234,31 @@ export class AppComponent {
 
     if (location) {
       this.filterdata = roleuser['rules'][0]['roleUser']
-      this.filterdata.forEach((role) => {
-        let roleKey = Object.keys(role)
-        const matchesRole = roleKey.filter(role => {
-          return role.toUpperCase() === 'ALL' || role.toUpperCase() === this.myForm.value.Roleuser;
+      try {
+        this.filterdata.forEach((role) => {
+          let roleKey = Object.keys(role)
+          const matchesRole = roleKey.filter(role => {
+            return role.toUpperCase() === 'ALL' || role.toUpperCase() === this.myForm.value.Roleuser;
+          });
+          this.fillterRole = role[matchesRole[0]]
+          if (matchesRole.length > 0) {
+            channelTypeByRole = this.fillterRole.some((channelType: string) => {
+              // console.log('channelType', channelType);
+  
+              if (!this.myForm.value.channelType) {
+                this.myForm.value.channelType = "undefined";
+              }
+              if (channelType.toUpperCase() === "ALL" || channelType.toUpperCase() === this.myForm.value.channelType.toUpperCase()) {
+                // console.log('channelType return',true);
+                return true;
+              }
+              return false;
+            })
+          }
         });
-        this.fillterRole = role[matchesRole[0]]
-        if (matchesRole.length > 0) {
-          channelTypeByRole = this.fillterRole.some((channelType: string) => {
-            console.log('channelType', channelType);
-
-            if (!this.myForm.value.channelType) {
-              this.myForm.value.channelType = "undefined";
-            }
-            if (channelType.toUpperCase() === "ALL" || channelType.toUpperCase() === this.myForm.value.channelType.toUpperCase()) {
-              // console.log('channelType return',true);
-              return true;
-            }
-            return false;
-          })
-        }
-      });
+      } catch(err:any){
+        console.log('err',err,'roleuser',roleuser);
+      }
     }
     if (location && channelTypeByRole) {
       return true
@@ -233,8 +268,8 @@ export class AppComponent {
   }
 
   filterSubGroup(velueSub: any, res: any) {
-    console.log('sub', velueSub);
-    console.log('res', res);
+    // console.log('sub', velueSub);
+    // console.log('res', res);
 
     let channelTypeByRole = false;
     let location = false;
@@ -261,7 +296,7 @@ export class AppComponent {
         this.fillterRole = role[matchesRole[0]]
         if (matchesRole.length > 0) {
           channelTypeByRole = this.fillterRole.some((channelType: string) => {
-            console.log('channelType', channelType);
+            // console.log('channelType', channelType);
 
             if (!this.myForm.value.channelType) {
               this.myForm.value.channelType = "undefined";
@@ -275,11 +310,11 @@ export class AppComponent {
         }
       });
     }
-    console.log('channelTypeByRole', channelTypeByRole);
+    // console.log('channelTypeByRole', channelTypeByRole);
 
     if (channelTypeByRole) {
-      console.log('checkGroup', res['topicGroup']);
-      console.log('checkGroup res', velueSub);
+      // console.log('checkGroup', res['topicGroup']);
+      // console.log('checkGroup res', velueSub);
 
       if (res['topicGroup'] === velueSub) {
         checkGroup = true
@@ -287,7 +322,7 @@ export class AppComponent {
         checkGroup = false
       }
     }
-    console.log('location && channelTypeByRole && checkGroup', location && channelTypeByRole && checkGroup);
+    // console.log('location && channelTypeByRole && checkGroup', location && channelTypeByRole && checkGroup);
 
     if (location && channelTypeByRole && checkGroup) {
       return true
@@ -384,10 +419,12 @@ export class AppComponent {
     if (data == 'rules') {
       let velue = []
       velue = Object.keys(this._showDetail[data][0])
-      return velue
+      return velue || "null"
     } else {
       // console.log('2',data,' ==> ',this._showDetail[data]);
-      return this._showDetail[data]
+      // console.log('data',data);
+      
+      return this._showDetail[data] || "null"
     }
   }
 
@@ -396,7 +433,9 @@ export class AppComponent {
     let velue = []
     velue = Object.keys(data)
     // console.log('velue',velue);
-    return velue
+    // console.log('this.myFormAddTopic.controls',this.myFormAddTopic.controls);
+    
+    return velue|| ''
   }
 
   isJSON(str: string) {
@@ -407,8 +446,8 @@ export class AppComponent {
     }
   }
   checkTypeOf(velue: any) {
-    // console.log('typeof(str)',typeof(this._showDetail[velue]),'velue',velue);
-    if (typeof (this._showDetail[velue]) === 'boolean') {
+    // console.log('typeof(str)',velue);
+    if (typeof (this._showDetail[velue]) == 'boolean') {
       return true
     } else {
       return false
@@ -416,8 +455,10 @@ export class AppComponent {
   }
 
   deleteMenuTopic() {
-    console.log('Delete', 'ID', this._showDetail['_id'], 'Name', this._showDetail['outTopicName']);
-    this.getDataMenu()
+    // console.log('Delete', 'ID', this._showDetail['_id'], 'Name', this._showDetail['outTopicName']);
+    window.location.href = ''
+    // this.getDataMenu()
+    this.ApiListService.delMenuTopicLanding(this._showDetail['_id'],this._showDetail['outTopicName'])
     this.deleteMenu = false;
   }
 
@@ -427,13 +468,59 @@ export class AppComponent {
     this.countDel = true
     setTimeout(()=>{                           // <<<---using ()=> syntax
       this.countDel = false;
-  }, 3000);
+    }, 3000);
+  }
+  
+  updateMenuTopic(){
+    let Menu:any = []
+    Menu = {
+      'keywords': [this.myFormAddTopic.value.keywords]  || this._showDetail['keywords'],
+      'rules': [],
+      'id': this._showDetail['_id'],//Not change _id to id
+      // 'outTopicName': this.myFormAddTopic.value.outTopicName  || this._showDetail['outTopicName'],
+      'outTopicName': this._showDetail['outTopicName'], //Not change outTopicName
+      'outTopicId': this.myFormAddTopic.value.outTopicId  || this._showDetail['outTopicId'],
+      'outTopicGroup': this.myFormAddTopic.value.outTopicGroup  || this._showDetail['outTopicGroup'],
+      'priority': this.myFormAddTopic.value.priority  || this._showDetail['priority'],
+      'imgBase64': this.myFormAddTopic.value.imgBase64  || this._showDetail['imgBase64'],
+      'isActive': this.myFormAddTopic.value.isActive  || this._showDetail['isActive'],
+      'isRedirect': this.myFormAddTopic.value.isRedirect  || this._showDetail['isRedirect'],
+      'function': this.myFormAddTopic.value.function  || this._showDetail['function'],
+      'outUrl': this.myFormAddTopic.value.outUrl  || this._showDetail['outUrl'],
+      'json': this.myFormAddTopic.value.json  || this._showDetail['json'],
+    }
+    Menu['rules'] = [{
+      // 'roleUser': [this.myFormAddTopic.value.roleUser]|| this._showDetail['rules'][0]['roleUser'],
+      // 'location': [this.myFormAddTopic.value.location] || this._showDetail['rules'][0]['location'][0],
+      'roleUser': this._showDetail['rules'][0]['roleUser'],
+      'location': this._showDetail['rules'][0]['location'],
+      'type': this._showDetail['rules'][0]['type'],
+    }]    
+
+    console.log('Menu',Menu);
+    console.log('this._showDetail',this._showDetail);
+
+    console.log('===',JSON.stringify(this._showDetail) === JSON.stringify(Menu));
+    // delete Menu['_id'];
+    delete Menu['__v'];
+    delete Menu['json'];
+    // Menu['id'] = JSON.stringify(this._showDetail['_id'])
+    // Menu.replace("_id", "id"); 
+    // Menu = JSON.parse(Menu)
+    console.log('Menu Parse',Menu);
+    
+    // Menu.Replace("_id", "id"); 
+    if(Menu['outTopicName'] && Menu['id']){
+      this.ApiListService.updateMenuTopicLanding(Menu,this.token).then((res)=>{
+        console.log('res',res);
+        window.location.href = ''
+      })
+    }
+    this.myFormAddTopic.reset()
   }
 
-  addMenuTopic(){
-    console.log('ADD',JSON.stringify(this._showDetail));
-    // console.log('ADD = ADD',JSON.stringify(this._showDetail) == JSON.stringify(this._showDetail));
-    console.log('myFormAddTopic',this.myFormAddTopic);
-    
+
+  cannel(){
+    this.myFormAddTopic.reset()
   }
 }

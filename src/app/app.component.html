@@ -186,22 +186,30 @@
         </div>
 
         <div *ngIf="upDateOpen">
-          <div *ngFor="let data of MenuKey;let i = index;" class="row">
+          <form [formGroup]="myFormAddTopic" *ngFor="let data of MenuKey;let i = index;" class="row">
             <div class="mt-2 col-4">{{i+1}}. {{data}}</div>
             <div class="mt-2 col-8 ">
-              <input *ngIf="!checkTypeOf(data) && data !== 'rules'" [disabled]="!edit" [ngClass]="{'editCss': !edit}"
-                style="width: 100%;" type="text" name=" " [value]="fillterMenuKey(data)" id="">
+              <!-- <input [formControlName]="data" *ngIf="!checkTypeOf(data) && data !== 'rules'" [disabled]="!edit" [ngClass]="{'editCss': !edit}"
+                style="width: 100%;" type="text" name=" " [value]="fillterMenuKey(data)" id=""> -->
               <!-- <input  *ngIf="checkTypeOf(data) && data !== 'rules'" [disabled]="!edit" [ngClass]="{'editCss': !edit}" style="width: 100%;" type="radio" name=" " [value]="fillterMenuKey(data)" id=""> -->
+              <!-- <div *ngIf="!checkTypeOf(data) && data !== 'rules' && !edit" style="width: 100%;" >
+              </div> -->
               
+              <div *ngIf="!checkTypeOf(data) && data !== 'rules'" style="width: 100%;" >
+                <input *ngIf="!edit" type="text"  [ngClass]="{'editCss': !edit}" [value]="fillterMenuKey(data)" disabled style="width: 100%;color: black;">
+                <input *ngIf="edit" type="text" [formControlName]="data" [placeholder]="fillterMenuKey(data)" style="width: 100%;">
+              </div>
+
               <div class="form-check form-switch" *ngIf="checkTypeOf(data) && data !== 'rules'">
-                <input class="form-check-input"  [disabled]="!edit"
-                  [ngClass]="{'editCss': !edit}" type="checkbox"  id="mySwitch" [name]="data"
-                  [value]="fillterMenuKey(data)" checked>
+                <input *ngIf="!edit" [value]="fillterMenuKey(data)" class="form-check-input"  [disabled]="true"
+                  [ngClass]="{'editCss': !edit}" type="checkbox" checked>
+                <input *ngIf="edit" [formControlName]="data" [placeholder]="data" class="form-check-input"
+                    [ngClass]="{'editCss': edit}" type="checkbox" checked>
               </div>
 
               <div *ngIf="data == 'rules'">
                 <div *ngFor="let role of ObjectReturn(_showDetail[data][0])">
-                  <div *ngIf="role == 'roleUser' && !edit ">
+                  <div *ngIf="role == 'roleUser' && !edit && _showDetail[data][0][role][0] > 0 ">
                     <b>{{role}}</b>
                     <div class="ml-2" *ngFor="let typexx of ObjectReturn(_showDetail[data][0][role][0]);let i = index;">
                       <span style="margin-left: 1rem;margin-right: 15px;">{{i+1}}. {{typexx}}</span>
@@ -209,11 +217,11 @@
                     </div>
                   </div>
                   <div *ngIf="role == 'roleUser' && edit ">
-                    <b>{{role}}</b>:<input type="text" style="height: auto; width: 100%;overflow: scroll;"
+                    <b>{{role}}</b>:<input [placeholder]="isJSON(_showDetail[data][0][role][0])" [formControlName]="role" type="text" style="height: auto; width: 100%;overflow: scroll;"
                       [value]="isJSON(_showDetail[data][0][role][0])" name="" id="">
                   </div>
 
-                  <div *ngIf="role == 'location' && !edit">
+                  <!-- <div *ngIf="role == 'location' && !edit">
                     <b>{{role}}</b>
                     <div style="max-height: 200px; overflow: scroll;" class="row">
                       <div class="col-3" style="height: auto; width: 100%;"
@@ -223,15 +231,15 @@
                     </div>
                   </div>
                   <div *ngIf="role == 'location' && edit ">
-                    <b>{{role}}</b>:<input type="text" style="height: auto; width: 100%;overflow: scroll;"
+                    <b>{{role}}</b>:<input [placeholder]="isJSON(_showDetail[data][0][role][0])" [formControlName]="role" type="text" style="height: auto; width: 100%;overflow: scroll;"
                       [value]="isJSON(_showDetail[data][0][role])" name="" id="">
-                  </div>
+                  </div> -->
 
                 </div>
               </div>
 
             </div>
-          </div>
+          </form>
         </div>
         <div *ngIf="!upDateOpen">
           <pre><code>{{_showDetail['json']}}</code></pre>
@@ -241,8 +249,8 @@
         <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-warning" (click)="edit = !edit">แก้ไข</button>
         <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-danger"  (click)="setTimeout();deleteMenu = !deleteMenu">Delete</button>
 
-        <button *ngIf="edit && upDateOpen" type="button" disabled  class="btn btn-success" (click)="addMenuTopic()">ยืนยันการแก้ไข</button>
-        <button *ngIf="edit && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="edit = !edit">ยกเลิก</button>
+        <button *ngIf="edit && upDateOpen" type="button"   class="btn btn-success" (click)="updateMenuTopic()">ยืนยันการแก้ไข</button>
+        <button *ngIf="edit && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="cannel();edit = !edit">ยกเลิก</button>
         <!-- </div> -->
         <button *ngIf="deleteMenu && upDateOpen" type="button" [disabled]="countDel" class="btn btn-success" (click)="deleteMenuTopic()">ยืนยันการลบเมนู</button>
         <button *ngIf="deleteMenu && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="deleteMenu = !deleteMenu">ยกเลิก</button>
