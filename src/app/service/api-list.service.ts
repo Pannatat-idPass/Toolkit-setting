@@ -12,12 +12,12 @@ export class ApiListService {
 
 
 
-  queryMenu(token:string) {
+  queryMenu() {
     // const apiUrl = 'https://dev-mychannel.cdc.ais.th' + api ||''
     const apiUrl = 'api/newlogin/queryMenuTopicLanding' || ''
-    if(!!token){
-      token = 'Bearer '+token 
-    }    
+    // if(!!token){
+     let token = 'Bearer '
+    // }    
     let header = new HttpHeaders({
       'x-authorization': token || ''
     })
@@ -30,12 +30,12 @@ export class ApiListService {
     }
     return this.http.post(apiUrl,body, httpOptions).toPromise();
   }
-  queryMenuSub(token:string) {
+  queryMenuSub() {
     // const apiUrl = 'https://dev-mychannel.cdc.ais.th' + api ||''
     const apiUrl = 'api/newlogin/queryMenuSubTopicLanding' || ''
-    if(!!token){
-      token = 'Bearer '+token 
-    }
+    // if(!!token){
+      let token = 'Bearer ' 
+    // }
     let header = new HttpHeaders({
       'x-authorization': token|| ''
     })

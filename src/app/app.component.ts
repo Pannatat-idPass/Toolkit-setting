@@ -40,6 +40,7 @@ export class AppComponent {
   channelTypeList = ['SFF-WEB', 'MYCHANNEL-APP']
   locationList = ['1100', '1111']
   myForm: FormGroup;
+  myFormAddTopic: FormGroup;
   AccessToken: any
   Enviroment: any
   _channel: any = 'Select Role'
@@ -62,6 +63,10 @@ export class AppComponent {
       locationCode: '',
       // email: '',
       // phone: ''
+    });
+
+    this.myFormAddTopic = this.fb.group({
+      roleUser:''
     });
 
     this.getDataMenuAll()
@@ -91,7 +96,7 @@ export class AppComponent {
     //  this.Enviroment = this.myForm.value.Enviroment
     //  this.Enviroment = this.myForm.value.channelType
     //  if(this.AccessToken && this.Enviroment){
-    this.ApiListService.queryMenu(this.myForm.value.AccessToken).then((res: any) => {
+    this.ApiListService.queryMenu().then((res: any) => {
       this.objectList = res.data
       this.objectList.forEach((data) => {
         // console.log('OUT',data['outTopicName']);
@@ -109,7 +114,7 @@ export class AppComponent {
     })
 
     //  }
-    this.ApiListService.queryMenuSub(this.myForm.value.AccessToken).then((res: any) => {
+    this.ApiListService.queryMenuSub().then((res: any) => {
       this.objecSubtList = res.data
       this.objecSubtList.forEach((data) => {
         // console.log('OUT',data['outTopicName']);
@@ -137,7 +142,7 @@ export class AppComponent {
     this.objecSubtList = []
     this.subInsideList = []
     this.ListSub = []
-    this.ApiListService.queryMenu(this.token).then((res: any) => {
+    this.ApiListService.queryMenu().then((res: any) => {
       this.objectList = res.data
       this.objectList.forEach((data) => {
         if (data['priority'] && data['isActive']) {
@@ -146,7 +151,7 @@ export class AppComponent {
       })
       this.dataList = this.dataList.sort((a, b) => a['priority'] - b['priority']);
     })
-    this.ApiListService.queryMenuSub(this.token).then((res: any) => {
+    this.ApiListService.queryMenuSub().then((res: any) => {
       this.objecSubtList = res.data
       this.objecSubtList.forEach((data) => {
         if (data['priority'] && data['isActive']) {
@@ -423,5 +428,12 @@ export class AppComponent {
     setTimeout(()=>{                           // <<<---using ()=> syntax
       this.countDel = false;
   }, 3000);
+  }
+
+  addMenuTopic(){
+    console.log('ADD',JSON.stringify(this._showDetail));
+    // console.log('ADD = ADD',JSON.stringify(this._showDetail) == JSON.stringify(this._showDetail));
+    console.log('myFormAddTopic',this.myFormAddTopic);
+    
   }
 }

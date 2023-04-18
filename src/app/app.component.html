@@ -58,7 +58,7 @@
     <option *ngFor="let _channel of locationList" [value]="_channel" >{{_channel}}</option>
   </select> -->
     <input type="text" placeholder="locationCode" formControlName="locationCode">
-    <input type="text" placeholder="AccessToken" formControlName="AccessToken">
+    <!-- <input type="text" placeholder="AccessToken" formControlName="AccessToken"> -->
 
     <!-- <input type="text" placeholder="Roleuser" formControlName="Roleuser"> -->
     <!-- <input type="text" placeholder="channelType" formControlName="channelType"> -->
@@ -241,7 +241,7 @@
         <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-warning" (click)="edit = !edit">แก้ไข</button>
         <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-danger"  (click)="setTimeout();deleteMenu = !deleteMenu">Delete</button>
 
-        <button *ngIf="edit && upDateOpen" type="button" disabled  class="btn btn-success">ยืนยันการแก้ไข</button>
+        <button *ngIf="edit && upDateOpen" type="button" disabled  class="btn btn-success" (click)="addMenuTopic()">ยืนยันการแก้ไข</button>
         <button *ngIf="edit && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="edit = !edit">ยกเลิก</button>
         <!-- </div> -->
         <button *ngIf="deleteMenu && upDateOpen" type="button" [disabled]="countDel" class="btn btn-success" (click)="deleteMenuTopic()">ยืนยันการลบเมนู</button>
