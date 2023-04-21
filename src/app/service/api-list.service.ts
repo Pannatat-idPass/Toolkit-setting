@@ -52,9 +52,25 @@ export class ApiListService {
     return this.http.post(apiUrl, body).toPromise();
   }
 
-  addMenuTopicLanding(formData: any, token: any) {
+  addMenuTopicLanding(formData: any) {
     const apiUrl = '/api/newlogin/addMenuTopicLanding';
-    const body = { formData }
+    const body = formData
+    // let token = 'Bearer ' 
+
+    let header = new HttpHeaders({
+      'x-authorization': 'Bearer'
+    })
+    const httpOptions = {
+      headers: header
+    }
+    return this.http.post(apiUrl, body, httpOptions).toPromise();
+  }
+
+  updateMenuTopicLanding(formData: any, token: any) {
+    const apiUrl = '/api/newlogin/updateMenuTopicLanding';
+    const body = formData
+    // console.log('formData', formData);
+
     // let token = 'Bearer ' 
 
     let header = new HttpHeaders({
@@ -65,10 +81,10 @@ export class ApiListService {
     }
     return this.http.post(apiUrl, body, httpOptions).toPromise();
   }
-  updateMenuTopicLanding(formData: any, token: any) {
-    const apiUrl = '/api/newlogin/updateMenuTopicLanding';
+  updateMenuSubTopicLanding(formData: any, token: any) {
+    const apiUrl = '/api/newlogin/updateMenuSubTopicLanding';
     const body = formData
-    console.log('formData', formData);
+    // console.log('formData', formData);
 
     // let token = 'Bearer ' 
 
@@ -92,6 +108,21 @@ export class ApiListService {
     const body = {
       "id": id,
       "outTopicName": outTopicName
+    }
+    return this.http.post(apiUrl, body,httpOptions).toPromise();
+  }
+
+  delMenuSubTopicLanding(id:any,outSubTopicName:any) {
+    const apiUrl = '/api/newlogin/delMenuSubTopicLanding';
+    let header = new HttpHeaders({
+      'x-authorization': 'Bearer'
+    })
+    const httpOptions = {
+      headers: header
+    }
+    const body = {
+      "id": id,
+      "outSubTopicName": outSubTopicName
     }
     return this.http.post(apiUrl, body,httpOptions).toPromise();
   }

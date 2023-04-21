@@ -43,8 +43,6 @@
 <div class="container mt-3">
   <h2>MENU NEWLGOIN</h2>
   <form [formGroup]="myForm">
-    <!-- <input type="text" placeholder="AccessToken" formControlName="AccessToken">
-  <input type="text" placeholder="Enviroment" formControlName="Enviroment"> -->
     <select id="Roleuser" formControlName="Roleuser">
       <option value="Roleuser">{{_channel}}</option>
       <option *ngFor="let _channel of roleList">{{_channel}}</option>
@@ -54,22 +52,13 @@
       <option value="_channelType">{{_channelType}}</option>
       <option *ngFor="let _channelType of channelTypeList">{{_channelType}}</option>
     </select>
-    <!-- <select formControlName="locationCode" [value]="_channel" (change)="checkSelectRole()">
-    <option *ngFor="let _channel of locationList" [value]="_channel" >{{_channel}}</option>
-  </select> -->
     <input type="text" placeholder="locationCode" formControlName="locationCode">
-    <!-- <input type="text" placeholder="AccessToken" formControlName="AccessToken"> -->
-
-    <!-- <input type="text" placeholder="Roleuser" formControlName="Roleuser"> -->
-    <!-- <input type="text" placeholder="channelType" formControlName="channelType"> -->
     <button type="submit" (click)="getDataMenu()" style="width: 80px;">Click</button>
     <button type="submit" (click)="getDataMenuAll()" style="width: 80px;">All</button>
     <button (click)="clear()" style="width: 80px;">Clear</button>
   </form>
-
   <div>
     <hr>
-
     <h2>MENU TOPIC</h2>
     <div class="row">
       <div *ngFor="let data of dataList; let i = index" class="col-2" style="position: relative;">
@@ -84,7 +73,7 @@
         </div>
       </div>
       <div class="col-2">
-        <div class="text-center mt-2" type="button" data-bs-toggle="modal" data-bs-target="#myModal">
+        <div class="text-center mt-2" type="button" data-bs-toggle="modal" data-bs-target="#myModal" (click)="templatMenuTopic(dataList[0])">
           <!-- <div class="Add-icon"> -->
           <img src="/assets/images/icon-package-catalog.png" width="80px" alt=""><br>
           <span><b>เพิ่มเมนู</b></span>
@@ -106,10 +95,10 @@
         </div>
       </div>
       <div class="col-2">
-        <div class="text-center mt-2" type="button" data-bs-toggle="modal" data-bs-target="#myModal">
+        <div class="text-center mt-2" type="button" data-bs-toggle="modal" data-bs-target="#myModal" (click)="templatMenuTopic(ListSub[0])">
           <!-- <div class="Add-icon"> -->
           <img src="/assets/images/icon-package-catalog.png" width="80px" alt=""><br>
-          <span><b>เพิ่มเมนู</b></span>
+          <span ><b>เพิ่มเมนู</b></span>
         </div>
       </div>
     </div>
@@ -140,30 +129,6 @@
   </div>
 </div>
 
-<div class="modal" id="myModal">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title">Add MenuSun</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body">
-        Modal body..
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 <div class="modal" id="myMenu">
   <div class="modal-dialog modal-md">
     <div class="modal-content" style="width: 600px;">
@@ -175,53 +140,59 @@
       </div>
       <!-- Modal body -->
       <div *ngIf="_showDetail" class="modal-body row" style="max-height: 600px; overflow: scroll;">
-        <div class="col-8 text-center">outTopicName : <h3>{{_showDetail['outTopicName']|| _showDetail['outSubTopicName']}}</h3></div>
-        <div *ngIf="!!_showDetail['imgBase64']" class="col-4 text-center"><img [src]="byPass(_showDetail)" width="60px" alt=""></div>
-        <div *ngIf="!!_showDetail['image']" class="col-4 text-center"><img src="{{_showDetail['image']}}" width="60px" alt=""></div>
+        <div class="col-8 text-center">outTopicName : <h3>{{_showDetail['outTopicName']||
+            _showDetail['outSubTopicName']}}</h3>
+        </div>
+        <div *ngIf="!!_showDetail['imgBase64']" class="col-4 text-center"><img [src]="byPass(_showDetail)" width="60px"
+            alt=""></div>
+        <div *ngIf="!!_showDetail['image']" class="col-4 text-center"><img src="{{_showDetail['image']}}" width="60px"
+            alt=""></div>
         <div class="col-12">
           <input type="text" [value]="_showDetail['json']" #userinput>
           <button [ngxClipboard]="userinput" value="click to copy">Copy</button>
           <button value="" (click)="upDateOpen = false">JSON</button>
-          <button value="" (click)="UpdateMenuTopic();upDateOpen = true">VIEW</button>
+          <button value="" (click)="viewMenuTopic();upDateOpen = true">VIEW</button>
         </div>
 
         <div *ngIf="upDateOpen">
           <form [formGroup]="myFormAddTopic" *ngFor="let data of MenuKey;let i = index;" class="row">
             <div class="mt-2 col-4">{{i+1}}. {{data}}</div>
             <div class="mt-2 col-8 ">
-              <!-- <input [formControlName]="data" *ngIf="!checkTypeOf(data) && data !== 'rules'" [disabled]="!edit" [ngClass]="{'editCss': !edit}"
-                style="width: 100%;" type="text" name=" " [value]="fillterMenuKey(data)" id=""> -->
-              <!-- <input  *ngIf="checkTypeOf(data) && data !== 'rules'" [disabled]="!edit" [ngClass]="{'editCss': !edit}" style="width: 100%;" type="radio" name=" " [value]="fillterMenuKey(data)" id=""> -->
-              <!-- <div *ngIf="!checkTypeOf(data) && data !== 'rules' && !edit" style="width: 100%;" >
-              </div> -->
-              
-              <div *ngIf="!checkTypeOf(data) && data !== 'rules'" style="width: 100%;" >
-                <input *ngIf="!edit" type="text"  [ngClass]="{'editCss': !edit}" [value]="fillterMenuKey(data)" disabled style="width: 100%;color: black;">
-                <input *ngIf="edit" type="text" [formControlName]="data" [placeholder]="fillterMenuKey(data)" style="width: 100%;">
+              <div *ngIf="!checkTypeBoolean(data) && data !== 'rules'" style="width: 100%;">
+                <input *ngIf="!edit" type="text" [ngClass]="{'editCss': !edit}" [value]="fillterMenuKey(data)" disabled
+                  style="width: 100%;color: black;">
+                <input *ngIf="edit" type="text" [formControlName]="data" [placeholder]="fillterMenuKey(data)"
+                  style="width: 100%;">
               </div>
 
-              <div class="form-check form-switch" *ngIf="checkTypeOf(data) && data !== 'rules'">
-                <input *ngIf="!edit" [value]="fillterMenuKey(data)" class="form-check-input"  [disabled]="true"
-                  [ngClass]="{'editCss': !edit}" type="checkbox" checked>
-                <input *ngIf="edit" [formControlName]="data" [placeholder]="data" class="form-check-input"
-                    [ngClass]="{'editCss': edit}" type="checkbox" checked>
+              <div *ngIf="checkTypeBoolean(data) && data !== 'rules'">
+                {{showCheck[data]}}
+                <div *ngIf="edit">
+                  <button (click)="isCheck(true,data)">true</button>
+                  <button (click)="isCheck(false,data)">false</button>
+                </div>
               </div>
-
               <div *ngIf="data == 'rules'">
                 <div *ngFor="let role of ObjectReturn(_showDetail[data][0])">
-                  <div *ngIf="role == 'roleUser' && !edit && _showDetail[data][0][role][0] > 0 ">
+                  <div *ngIf="role == 'roleUser'">
                     <b>{{role}}</b>
-                    <div class="ml-2" *ngFor="let typexx of ObjectReturn(_showDetail[data][0][role][0]);let i = index;">
+                    <div class="ml-2" *ngFor="let typexx of ObjectReturn(listRoleUserUpdate[0]);let i = index;">
                       <span style="margin-left: 1rem;margin-right: 15px;">{{i+1}}. {{typexx}}</span>
-                      <div style="float: right;">[<span>{{_showDetail[data][0][role][0][typexx]}}</span>]</div>
+                      <div style="float: right;">[<span>{{_showDetail[data][0][role][0][typexx]}}]
+                          <span *ngIf="edit" (click)="delButton(typexx,role)"
+                            style="color: red;cursor: pointer;margin-left: 10px;">X</span>
+                        </span>
+                      </div>
+                    </div>
+                    <div *ngIf="edit">
+                      <input [formControlName]="role" [placeholder]="'roleUser'" type="text"
+                        style="height: auto; width: 70%;">
+                      <input [formControlName]="'channelType'" [placeholder]="'channelType'" type="text"
+                        style="height: auto; width: 30%;">
+                      <button (click)="addButton(role)">add</button>
                     </div>
                   </div>
-                  <div *ngIf="role == 'roleUser' && edit ">
-                    <b>{{role}}</b>:<input [placeholder]="isJSON(_showDetail[data][0][role][0])" [formControlName]="role" type="text" style="height: auto; width: 100%;overflow: scroll;"
-                      [value]="isJSON(_showDetail[data][0][role][0])" name="" id="">
-                  </div>
-
-                  <!-- <div *ngIf="role == 'location' && !edit">
+                  <div *ngIf="role == 'location' && !edit">
                     <b>{{role}}</b>
                     <div style="max-height: 200px; overflow: scroll;" class="row">
                       <div class="col-3" style="height: auto; width: 100%;"
@@ -231,13 +202,20 @@
                     </div>
                   </div>
                   <div *ngIf="role == 'location' && edit ">
-                    <b>{{role}}</b>:<input [placeholder]="isJSON(_showDetail[data][0][role][0])" [formControlName]="role" type="text" style="height: auto; width: 100%;overflow: scroll;"
-                      [value]="isJSON(_showDetail[data][0][role])" name="" id="">
-                  </div> -->
-
+                    <b>{{role}}</b>:
+                    <div style="max-height: 200px; overflow: scroll;" class="row">
+                      <div class="col-3" style="height: auto; width: 100%;"
+                        *ngFor="let type of listLocationUpdate;let i = index;">
+                        <div>{{i+1}}. {{type}}<span (click)="delButton(i,role)"
+                            style="color: red;font-size: 18px;cursor: pointer;margin-left: 10px;">X</span></div>
+                      </div>
+                    </div>
+                    <input [placeholder]="role" [formControlName]="role" type="text"
+                      style="height: auto; width: 100%;overflow: scroll;">
+                    <button (click)="addButton(role)">add</button>
+                  </div>
                 </div>
               </div>
-
             </div>
           </form>
         </div>
@@ -246,18 +224,109 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-warning" (click)="edit = !edit">แก้ไข</button>
-        <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-danger"  (click)="setTimeout();deleteMenu = !deleteMenu">Delete</button>
+        <span *ngIf="errorMessenger" style="color: red;font-size: 24px;">{{errorMessenger}}</span>
+        <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-warning"
+          (click)="edit = !edit">แก้ไข</button>
+        <button *ngIf="!edit && !deleteMenu && upDateOpen" type="button" class="btn btn-danger"
+          (click)="setTimeout();deleteMenu = !deleteMenu">Delete</button>
 
-        <button *ngIf="edit && upDateOpen" type="button"   class="btn btn-success" (click)="updateMenuTopic()">ยืนยันการแก้ไข</button>
-        <button *ngIf="edit && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="cannel();edit = !edit">ยกเลิก</button>
+        <button *ngIf="edit && upDateOpen" type="button" class="btn btn-success"
+          (click)="updateMenu()">ยืนยันการแก้ไข</button>
+        <button *ngIf="edit && upDateOpen" type="button" class="btn btn-danger ml-2"
+          (click)="cannel();edit = !edit">ยกเลิก</button>
         <!-- </div> -->
-        <button *ngIf="deleteMenu && upDateOpen" type="button" [disabled]="countDel" class="btn btn-success" (click)="deleteMenuTopic()">ยืนยันการลบเมนู</button>
-        <button *ngIf="deleteMenu && upDateOpen" type="button" class="btn btn-danger ml-2"(click)="deleteMenu = !deleteMenu">ยกเลิก</button>
+        <button *ngIf="deleteMenu && upDateOpen" type="button" [disabled]="countDel" class="btn btn-success"
+          (click)="deleteMenuTopic()">ยืนยันการลบเมนู</button>
+        <button *ngIf="deleteMenu && upDateOpen" type="button" class="btn btn-danger ml-2"
+          (click)="deleteMenu = !deleteMenu">ยกเลิก</button>
 
-        <button *ngIf="!edit && !deleteMenu" type="button" class="btn btn-secondary" #closebutton data-bs-dismiss="modal"
-          (click)="!upDateOpen">Close</button>
+        <button *ngIf="!edit && !deleteMenu" type="button" class="btn btn-secondary" #closebutton
+          data-bs-dismiss="modal" (click)="!upDateOpen">Close</button>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Add MenuSun -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content" style="width: 600px;">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Add MenuSun</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body row" style="max-height: 600px; overflow: scroll;width: 100%;">
+        <form [formGroup]="myFormAddTopic" *ngFor="let data of templatMenu;let i = index;" class="row">
+          <div class="mt-2 col-4">{{i+1}}. {{data}}</div>
+          <div class="mt-2 col-8 ">
+            <div *ngIf="!checkTypeBoolean(data) && data !== 'rules'" style="width: 100%;">
+              <input type="text" [formControlName]="data" [placeholder]="fillterMenuKey(data)"
+                style="width: 100%;">
+            </div>
+
+            <div *ngIf="checkTypeBoolean(data) && data !== 'rules'">
+              {{showCheck[data]}}
+              <div>
+                <button (click)="isCheck(true,data)">true</button>
+                <button (click)="isCheck(false,data)">false</button>
+              </div>
+            </div>
+            <div *ngIf="data == 'rules'">
+              <div *ngFor="let role of ObjectReturn(_showDetail[data][0])">
+                <div *ngIf="role == 'roleUser'">
+                  <b>{{role}}</b>
+                  <div class="ml-2" *ngFor="let typexx of ObjectReturn(listRoleUserUpdate[0]);let i = index;">
+                    <span style="margin-left: 1rem;margin-right: 15px;">{{i+1}}. {{typexx}}</span>
+                    <div style="float: right;">[<span>{{_showDetail[data][0][role][0][typexx]}}]
+                        <span  (click)="delButton(typexx,role)"
+                          style="color: red;cursor: pointer;margin-left: 10px;">X</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <input [formControlName]="role" [placeholder]="'roleUser'" type="text"
+                      style="height: auto; width: 70%;">
+                    <input [formControlName]="'channelType'" [placeholder]="'channelType'" type="text"
+                      style="height: auto; width: 30%;">
+                    <button (click)="addButton(role)">add</button>
+                  </div>
+                </div>
+                <div *ngIf="role == 'location'">
+                  <b>{{role}}</b>:
+                  <div style="max-height: 200px; overflow: scroll;" class="row">
+                    <div class="col-3" style="height: auto; width: 100%;"
+                      *ngFor="let type of listLocationUpdate;let i = index;">
+                      <div>{{i+1}}. {{type}}<span (click)="delButton(i,role)"
+                          style="color: red;font-size: 18px;cursor: pointer;margin-left: 10px;">X</span></div>
+                    </div>
+                  </div>
+                  <input [placeholder]="role" [formControlName]="role" type="text"
+                    style="height: auto; width: 100%;overflow: scroll;">
+                  <button (click)="addButton(role)">add</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <span *ngIf="errorMessenger" style="color: red;
+        font-size: 14px;
+        width: 250px;
+        overflow: scroll;
+        height: 50px;
+        border: 2px solid;">{{errorMessenger}}</span>
+        <button *ngIf="!addMenu" type="button" class="btn btn-success" (click)="setTimeout();addMenu = !addMenu">เพิ่มเมนู</button>
+        <button *ngIf="addMenu" type="button" class="btn btn-success"  [disabled]="countDel" (click)="addMenuTopicLanding()">ยืนยันการเพิ่มเมนู</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="cannel();">Close</button>
+      </div>
+
     </div>
   </div>
 </div>
