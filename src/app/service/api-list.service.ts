@@ -66,6 +66,20 @@ export class ApiListService {
     return this.http.post(apiUrl, body, httpOptions).toPromise();
   }
 
+  addMenuSubTopicLanding(formData: any) {
+    const apiUrl = '/api/newlogin/addMenuSubTopicLanding';
+    const body = formData
+    // let token = 'Bearer ' 
+
+    let header = new HttpHeaders({
+      'x-authorization': 'Bearer'
+    })
+    const httpOptions = {
+      headers: header
+    }
+    return this.http.post(apiUrl, body, httpOptions).toPromise();
+  }
+
   updateMenuTopicLanding(formData: any, token: any) {
     const apiUrl = '/api/newlogin/updateMenuTopicLanding';
     const body = formData

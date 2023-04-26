@@ -19,9 +19,12 @@ export class AppComponent {
   // api:string ='api/newlogin/queryMenuTopicLanding'
   // api:string ='https://dev-mychannel.cdc.ais.th/api/newlogin/queryMenuTopicLanding'
   dataList: any = []
+  dataListOff: any = []
   dataListSub = []
+  dataSubListOff = []
   ListSub = []
-  objectList = []
+  listNameMenu: any = []
+  // objectList = []
   objecSubtList = []
   filterdata = []
   fillterRole = []
@@ -37,24 +40,41 @@ export class AppComponent {
   dataUpdate: any = []
   listLocationUpdate: any = []
   listRoleUserUpdate: any = []
-  showCheck:any = []
+  showCheck: any = []
+  menusUpdate: any = []
+  pushMenus: any = []
   checkDetail: any
-  subName: any
+  selectSub: any
+  flagSub: boolean = false;
   edit: boolean = false;
+  openhide: boolean = false;
+  openhideSub: boolean = false;
   deleteMenu: boolean = false;
   roleList = ['BACKOFFICEAIS', 'BACKOFFICECSS', 'AISSHOP', 'ASP', 'TELEWIZ', 'BACKOFFICEAIS', 'AISBUDDYEXCLUSIVE', 'RETAILCHAIN', 'AISMINICORNER', 'PCBRANDAIS']
-  channelTypeList = ['SFF-WEB', 'MYCHANNEL-APP']
+  channelTypeList = ['All', 'SFF-WEB', 'MYCHANNEL-APP']
   locationList = ['1100', '1111']
+  formCreate = ['keywords',
+    'rules',
+    'outTopicName', //Not change outTopicName
+    'outTopicId',
+    'outTopicGroup',
+    'priority',
+    'imgBase64',
+    'isActive',
+    'isRedirect',
+    'function',
+    'outUrl']
   myForm: FormGroup;
   myFormAddTopic: FormGroup;
   AccessToken: any
   Enviroment: any
   _channel: any = 'Select Role'
-  _channelType: any = 'channelType(All)'
+  _channelType: any = 'channelType'
+  topicGroup: any = 'topicGroup'
   _showDetail: any = [];
-  templatMenu:any = []
+  templatMenu: any = []
   errorMessenger: string = '';
-  addMenu:boolean = false
+  addMenu: boolean = false
   countDel: boolean = true;
   countAdd: boolean = true;
   upDateOpen: boolean = false;
@@ -62,7 +82,6 @@ export class AppComponent {
     public ApiListService: ApiListService,
     private fb: FormBuilder,
     private sanitizer: DomSanitizer,
-    // private clipboard: Clipboard
   ) {
     this.myForm = this.fb.group({
       AccessToken: '',
@@ -75,28 +94,6 @@ export class AppComponent {
     this.myFormAddTopic = this.fb.group({
       roleUser: '',
       channelType: '',
-      // location: '',
-      // rules: '',
-      // keywords: '',
-      // _id: '',
-      // outTopicName: '',
-      // outTopicId: '',
-      // outTopicGroup: '',
-      // priority: '',
-      // imgBase64: '',
-      // image: '',
-      // isActive: Boolean,
-      // isRedirect: Boolean,
-      // function: '',
-      // outUrl: '',
-      // json: '',
-      // __v: '',
-      // menus: '', // SUBmenu
-      // outSubTopicName: '', // SUBmenu
-      // topicGroup: '', // SUBmenu
-      // outSubTopicId: '',// SUBmenu
-      // color: '',// SUBmenu
-      // subTopicGroup:'' //SUBinSUB
     });
 
     this.getDataMenuAll()
@@ -104,47 +101,46 @@ export class AppComponent {
   getDataMenu() {
     this.dataList = []
     this.dataListSub = []
-    this.objectList = []
+    this.dataListOff = []
+    this.listNameMenu = []
+    this.dataSubListOff = []
+    let objectList = []
     this.objecSubtList = []
     this.subInsideList = []
     this.ApiListService.queryMenu().then((res: any) => {
-      this.objectList = res.data
-      // console.log('this.objectList',this.objectList);
-      this.objectList.forEach((data: any) => {
-        console.log('OUT', data['outTopicName']);
+      objectList = res.data
+      objectList.forEach((data: any) => {
         try {
-          if (data.priority && data.isActive) {
-            if (this.filterData(data) === true) {
-              console.log('filterData', this.filterData(data) === true);
+          if (this.filterData(data) === true) {
+            this.listNameMenu.push(data['outTopicName'])
+            if (data.priority && data.isActive) {
+              // console.log('filterData', this.filterData(data) === true);
               this.dataList.push(data);
+            } else {
+              this.dataListOff.push(data);
             }
           }
         } catch (err: any) {
           console.log('catch', data['outTopicName']);
         }
       })
-
-      console.log('this.dataList', this.dataList);
       this.dataList = this.dataList.sort((a: any, b: any) => a['priority'] - b['priority']);
-
     }).catch((res) => {
       this.dataList = []
       this.errorMessenger = JSON.stringify(res.error)
     })
-
-    //  }
     this.ApiListService.queryMenuSub().then((res: any) => {
       this.objecSubtList = res.data
       this.objecSubtList.forEach((data) => {
-        if (data['priority'] && data['isActive']) {
-          if (this.filterData(data) === true) {
+        if (this.filterData(data) === true) {
+          if (data['priority'] && data['isActive']) {
             this.dataListSub.push(data);
+          } else {
+            this.dataSubListOff.push(data);
           }
         }
       })
       this.ListSub = this.dataListSub.sort((a, b) => a['priority'] - b['priority']);
-      console.log('this.ListSub', this.ListSub);
-
     }).catch((res) => {
       console.log(res.error);
       this.dataListSub = []
@@ -156,15 +152,21 @@ export class AppComponent {
   getDataMenuAll() {
     this.dataList = []
     this.dataListSub = []
-    this.objectList = []
+    this.listNameMenu = []
+    this.dataListOff = []
+    this.dataSubListOff = []
+    let objectList = []
     this.objecSubtList = []
     this.subInsideList = []
-    this.ListSub = []
+    // this.ListSub = []
     this.ApiListService.queryMenu().then((res: any) => {
-      this.objectList = res.data
-      this.objectList.forEach((data) => {
+      objectList = res.data
+      objectList.forEach((data: any) => {
+        this.listNameMenu.push(data['outTopicName'])
         if (data['priority'] && data['isActive']) {
           this.dataList.push(data);
+        } else {
+          this.dataListOff.push(data);
         }
       })
       this.dataList = this.dataList.sort((a: any, b: any) => a['priority'] - b['priority']);
@@ -173,10 +175,13 @@ export class AppComponent {
       this.objecSubtList = res.data
       this.objecSubtList.forEach((data) => {
         if (data['priority'] && data['isActive']) {
-          this.ListSub.push(data);
+          this.dataListSub.push(data);
+        } else {
+          this.dataSubListOff.push(data);
         }
       })
-      this.ListSub = this.ListSub.sort((a, b) => a['priority'] - b['priority']);
+      this.ListSub = this.dataListSub.sort((a, b) => a['priority'] - b['priority']);
+      // console.log('this.dataListSu', this.dataListSub);
     })
   }
 
@@ -219,9 +224,11 @@ export class AppComponent {
           });
           this.fillterRole = role[matchesRole[0]]
           if (matchesRole.length > 0) {
+            console.log('this.myForm.value.channelType', this.myForm.value.channelType);
+
             channelTypeByRole = this.fillterRole.some((channelType: string) => {
-              if (!this.myForm.value.channelType) {
-                this.myForm.value.channelType = "undefined";
+              if (!this.myForm.value.channelType || this.myForm.value.channelType == 'channelType') {
+                return true
               }
               if (channelType.toUpperCase() === "ALL" || channelType.toUpperCase() === this.myForm.value.channelType.toUpperCase()) {
                 return true;
@@ -297,41 +304,36 @@ export class AppComponent {
     this._showDetail = data;
     this._showDetail['json'] = JSON.stringify(data, null, 4);
     sessionStorage.setItem('Detail', JSON.stringify(data))
-    // this.myFormAddTopic.value.isActive = [...this._showDetail['isActive']]
-    // this.myFormAddTopic.value.isRedirect = [...this._showDetail['isRedirect']]
     this.listLocationUpdate = [...this._showDetail['rules'][0]['location']]
     this.listRoleUserUpdate = [...this._showDetail['rules'][0]['roleUser']]
-    let res:any = sessionStorage.getItem("Detail")
-    // console.log('reszy',res);
-    
+    let res: any = sessionStorage.getItem("Detail")
     this.showCheck['isActive'] = JSON.parse(res).isActive
     this.showCheck['isRedirect'] = JSON.parse(res).isRedirect
     this.addControl(this._showDetail)
-    console.log('this.myFormAddTopic',this.myFormAddTopic.value);
   }
 
-  templatMenuTopic(data: any){
+  templatMenuTopic(data: any, subInside: boolean) {
     this.addControl(data)
     this._showDetail = data
-    this.listLocationUpdate = [...this._showDetail['rules'][0]['location']]
-    this.listRoleUserUpdate = [...this._showDetail['rules'][0]['roleUser']]
+    this.flagSub = subInside
+    this.listLocationUpdate = []
+    this.listRoleUserUpdate = [{}]
+    delete data['_id']
+    delete data['isActive']
     this.templatMenu = Object.keys(data)
-    delete this.templatMenu['_id']
-    console.log('this.templatMenu',this.templatMenu)
-    // console.log('_showDetail',this._showDetail);
+    console.log('this.templatMenu', this.templatMenu)
   }
-  
-  addControl(ListControl:any) {
-    Object.keys(ListControl).forEach((res:any)=>{
-      if(res == 'rules'){        
-        Object.keys(ListControl[res][0]).forEach((xx:any)=>{
+
+  addControl(ListControl: any) {
+    Object.keys(ListControl).forEach((res: any) => {
+      if (res == 'rules') {
+        Object.keys(ListControl[res][0]).forEach((xx: any) => {
           this.myFormAddTopic.addControl(xx, this.fb.control(''));
         })
       } else {
         this.myFormAddTopic.addControl(res, this.fb.control(''));
       }
-    })   
-    console.log('this.addControl',this.myFormAddTopic.value);
+    })
   }
 
   open() {
@@ -344,6 +346,7 @@ export class AppComponent {
     this.subInsideList = []
     let SubTopic: any = []
     if (this.ListSub.length > 0) {
+
       this.ListSub.forEach((res) => {
         if (this.filterSubGroup(velue, res)) {
           SubTopic.push(res)
@@ -355,16 +358,19 @@ export class AppComponent {
     }
   }
 
-  dropSub(dataGroup: any) {
+  selectMenuSub(dataGroup: any) {
     this.subInsideList = []
-    this.subName = dataGroup
+    this.selectSub = dataGroup
     this.menuSubname = dataGroup['menus']
     this.menuSubname.forEach((res) => {
-      if (this.filterData(res)) {
+      if (this.filterData(res) || !this.myFormAddTopic.value.roleUser && !this.myFormAddTopic.value.channelType) {
         this.subInsideList.push(res)
       }
     })
+    console.log('this.selectSub', this.selectSub);
+    // console.log('updateMenus', this.subInsideList);
   }
+
 
   viewMenuTopic() {
     this.edit = false;
@@ -404,23 +410,24 @@ export class AppComponent {
     }
   }
 
-  addMenuTopicLanding(){
-    let formMenu:any
-    let isActive:boolean
-    let isRedirect:boolean
-    let isfunction:any
-
-    if(this.showCheck["isActive"] !== this._showDetail['isActive']){
-      isActive = this.showCheck["isActive"]
-    } else{
-      isActive = true
+  AddMenuTopic() {
+    if (this._showDetail['outTopicName']) {
+      this.addMenuTopicLanding()
+    } else if (!!this.flagSub) {
+      this.addMenus()
+    } else {
+      this.addMenuSubTopicLanding()
     }
-    if(this.showCheck["isRedirect"] !== this._showDetail['isRedirect']){
+  }
+
+  addMenuTopicLanding() {
+    let formMenu: any
+    let isRedirect: boolean
+    if (this.showCheck["isRedirect"] !== this._showDetail['isRedirect']) {
       isRedirect = this.showCheck["isRedirect"]
-    } else{
+    } else {
       isRedirect = false
     }
-    console.log();
     formMenu = {
       'keywords': [this.myFormAddTopic.value.keywords] || [''],
       'rules': [{
@@ -428,44 +435,109 @@ export class AppComponent {
         'location': this.listLocationUpdate,
         'type': '',
       }],
-      // '_id': this._showDetail['_id'],//Not change _id to id
       'outTopicName': this.myFormAddTopic.value.outTopicName || '', //Not change outTopicName
       'outTopicId': this.myFormAddTopic.value.outTopicId || '',
       'outTopicGroup': this.myFormAddTopic.value.outTopicGroup || '',
       'priority': this.myFormAddTopic.value.priority || 99,
       'imgBase64': this.myFormAddTopic.value.imgBase64 || '',
-      'isActive': isActive,
-      'isRedirect':  isRedirect,
+      'isActive': true,
+      'isRedirect': isRedirect,
       'function': this.myFormAddTopic.value.function || '',
-      'outUrl': this.myFormAddTopic.value.outUrl || '',
-      // 'json': this._showDetail['json'],
-      // '__v': this._showDetail['__v'],
+      'outUrl': this.myFormAddTopic.value.outUrl || ''
     }
-    // formMenu['keywords'] = [this.myFormAddTopic.value.keywords]
-    if(formMenu['function'] === null || this.myFormAddTopic.value.function.match(/^ *$/) !== null){
+    if (formMenu['function'].match(/^ *$/) !== null) {
       formMenu['function'] = ''
     }
-    
-    console.log('formMenu',formMenu);
-    
+    console.log('formMenu', formMenu);
 
-
-    // if(this.countDel){
-      this.ApiListService.addMenuTopicLanding(formMenu).then(((res)=>{
-        console.log(res);
-        window.location.href = ''
-      })).catch((err:any)=>{
-        console.log('err',err);
-        this.errorMessenger = JSON.stringify(err.error.developerMessage)
-      })
+    this.ApiListService.addMenuTopicLanding(formMenu).then(((res) => {
+      console.log(res);
+      window.location.href = ''
+    })).catch((err: any) => {
+      console.log('err', err);
+      this.errorMessenger = JSON.stringify(err.error.developerMessage)
+    })
+  }
+  addMenuSubTopicLanding() {
+    let formMenu: any
+    // let isRedirect: boolean
+    // if (this.showCheck["isRedirect"] !== this._showDetail['isRedirect']) {
+    //   isRedirect = this.showCheck["isRedirect"]
+    // } else {
+    //   isRedirect = false
     // }
+    formMenu = {
+      'keywords': [this.myFormAddTopic.value.keywords] || [''],
+      'menus': [],
+      'rules': [{
+        'roleUser': this.listRoleUserUpdate,
+        'location': this.listLocationUpdate,
+        'type': '',
+      }],
+      'outSubTopicName': this.myFormAddTopic.value.outSubTopicName || '', //Not change outTopicName
+      'outSubTopicId': this.myFormAddTopic.value.outSubTopicId || '',
+      'topicGroup': this.myFormAddTopic.value.topicGroup || '',
+      'image': this.myFormAddTopic.value.image || '',
+      'outUrl': this.myFormAddTopic.value.outUrl || '',
+      'priority': this.myFormAddTopic.value.priority || 99,
+      'isActive': true,
+      // 'isRedirect': isRedirect,
+      'function': this.myFormAddTopic.value.function || ''
+    }
+    if (formMenu['function'].match(/^ *$/) !== null) {
+      formMenu['function'] = ''
+    }
+    console.log('formMenu', formMenu);
+
+    this.ApiListService.addMenuSubTopicLanding(formMenu).then(((res) => {
+      console.log(res);
+      window.location.href = ''
+    })).catch((err: any) => {
+      console.log('err', err);
+      this.errorMessenger = JSON.stringify(err.error.developerMessage)
+    })
+  }
+
+  addMenus() {
+    console.log('addMenus.selectSub', this.selectSub);
+
+    let formMenu: any
+    // let isRedirect: boolean
+    formMenu = {
+      'keywords': [this.myFormAddTopic.value.keywords] || [''],
+      'menus': [],
+      'rules': [{
+        'roleUser': this.listRoleUserUpdate,
+        'location': this.listLocationUpdate,
+        'type': '',
+      }],
+      'outSubTopicName': this.myFormAddTopic.value.outSubTopicName || '', //Not change outTopicName
+      'outSubTopicId': this.myFormAddTopic.value.outSubTopicId || '',
+      'subTopicGroup': this.selectSub.outSubTopicName || '',
+      'image': this.myFormAddTopic.value.image || '',
+      'outUrl': this.myFormAddTopic.value.outUrl || '',
+      'priority': this.myFormAddTopic.value.priority || 0,
+      'isActive': true,
+      'function': this.myFormAddTopic.value.function || ''
+    }
+    if (formMenu['function'].match(/^ *$/) !== null) {
+      formMenu['function'] = ''
+    }
+    console.log('formMenu', formMenu);
+    this.pushMenus = formMenu || []
+    if (!!this.pushMenus) {
+      console.log('pushMenus', this.pushMenus);
+      this.flagSub = false
+      this.showDetail(this.selectSub)
+      this.updateMenuSubTopic()
+    }
   }
 
   deleteMenuTopic() {
-    if(this._showDetail['outTopicName']){
-    this.ApiListService.delMenuTopicLanding(this._showDetail['_id'], this._showDetail['outTopicName'])
+    if (this._showDetail['outTopicName']) {
+      this.ApiListService.delMenuTopicLanding(this._showDetail['_id'], this._showDetail['outTopicName'])
     } else {
-    this.ApiListService.delMenuSubTopicLanding(this._showDetail['_id'], this._showDetail['outSubTopicName'])
+      this.ApiListService.delMenuSubTopicLanding(this._showDetail['_id'], this._showDetail['outSubTopicName'])
     }
     this.deleteMenu = false;
     setTimeout(() => {                           // <<<---using ()=> syntax
@@ -478,31 +550,87 @@ export class AppComponent {
     this.countDel = true
     setTimeout(() => {                           // <<<---using ()=> syntax
       this.countDel = false;
-    }, 5000);
+    }, 3000);
   }
-  updateMenu(){
-    if(this._showDetail['outTopicName']){
+  updateMenu() {
+    if (this._showDetail['outTopicName']) {
       this.updateMenuTopic()
+    } else if (this._showDetail['subTopicGroup']) {
+      this.updateMenus()
     } else {
       this.updateMenuSubTopic()
     }
   }
 
+  updateMenus() {
+    let formMenus: any = []
+    let dataSubUpdate: any = [...this.selectSub['menus']]
+    formMenus = {
+      'keywords': this._showDetail['keywords'],
+      'rules': [{
+        'roleUser': this.listRoleUserUpdate || this._showDetail['rules'][0]['roleUser'],
+        'location': this.listLocationUpdate || this._showDetail['rules'][0]['location'],
+        'type': this._showDetail['rules'][0]['type'],
+      }],
+      'menus': this._showDetail['menus'] || [],//Not change _id to id
+      'outSubTopicName': this._showDetail['outSubTopicName'], //Not change outTopicName
+      'outSubTopicId': this.myFormAddTopic.value.outSubTopicId || this._showDetail['outSubTopicId'],
+      'subTopicGroup': this.myFormAddTopic.value.subTopicGroup || this._showDetail['subTopicGroup'],
+      'priority': this.myFormAddTopic.value.priority || this._showDetail['priority'],
+      'image': this.myFormAddTopic.value.image || this._showDetail['image'],
+      'isActive': true,
+      'function': this.myFormAddTopic.value.function || this._showDetail['function'],
+      'outUrl': this.myFormAddTopic.value.outUrl || this._showDetail['outUrl'],
+    }
+    if (formMenus['function'] && formMenus['function'].match(/^ *$/) !== null) {
+      formMenus['function'] = ''
+    }
+    if (!!this.myFormAddTopic.value.keywords) {
+      formMenus['keywords'] = [this.myFormAddTopic.value.keywords]
+    }
+    this.selectSub['menus'].forEach((res: any, index: any) => {
+      if (res['outSubTopicName'] === formMenus['outSubTopicName']) {
+        Object.keys(formMenus).forEach((Res: any) => {
+          try {
+            if (typeof (formMenus[Res]) === 'boolean' || !!dataSubUpdate[Res] && formMenus[Res]) {
+              dataSubUpdate[index][Res] = formMenus[Res]
+            } else if (typeof (formMenus[Res]) === 'boolean') {
+              dataSubUpdate[index][Res] = formMenus[Res]
+            } else {
+              dataSubUpdate[index][Res] = formMenus[Res] || ''
+            }
+          } catch (err: any) {
+            console.log('Resforeach', Res);
+          }
+
+        })
+      }
+      delete dataSubUpdate[index]['json'];
+    })
+    // console.log('CHECK==',JSON.stringify(this.checkDetail) === JSON.stringify(formMenus));
+    // console.log('dataSubUpdate',dataSubUpdate);
+    this.menusUpdate = dataSubUpdate
+    if (!!this.menusUpdate) {
+      console.log('menusUpdate', this.menusUpdate);
+      this.showDetail(this.selectSub)
+      this.updateMenuSubTopic()
+    }
+  }
   updateMenuTopic() {
     let Menu: any = []
     this.dataUpdate = Object.assign({}, this._showDetail);
-    let isActive:boolean
-    let isRedirect:boolean
-    let isfunction:any
+    let isActive: boolean
+    let isRedirect: boolean
+    let isfunction: any
 
-    if(this.showCheck["isActive"] !== this._showDetail['isActive']){
+    if (this.showCheck["isActive"] !== this._showDetail['isActive']) {
       isActive = this.showCheck["isActive"]
-    } else{
+    } else {
       isActive = this._showDetail["isActive"]
     }
-    if(this.showCheck["isRedirect"] !== this._showDetail['isRedirect']){
+    if (this.showCheck["isRedirect"] !== this._showDetail['isRedirect']) {
       isRedirect = this.showCheck["isRedirect"]
-    } else{
+    } else {
       isRedirect = this._showDetail["isRedirect"]
     }
     Menu = {
@@ -519,17 +647,17 @@ export class AppComponent {
       'priority': this.myFormAddTopic.value.priority || this._showDetail['priority'],
       'imgBase64': this.myFormAddTopic.value.imgBase64 || this._showDetail['imgBase64'],
       'isActive': isActive,
-      'isRedirect':  isRedirect,
+      'isRedirect': isRedirect,
       'function': this.myFormAddTopic.value.function || this._showDetail['function'],
       'outUrl': this.myFormAddTopic.value.outUrl || this._showDetail['outUrl'],
       'json': this._showDetail['json'],
       '__v': this._showDetail['__v'],
     }
 
-    if(Menu['function'].match(/^ *$/) !== null){
+    if (Menu['function'].match(/^ *$/) !== null) {
       Menu['function'] = ''
     }
-    
+
     if (!!this.myFormAddTopic.value.keywords) {
       Menu['keywords'] = [this.myFormAddTopic.value.keywords]
     }
@@ -550,6 +678,8 @@ export class AppComponent {
       this.dataUpdate = JSON.parse(JSON.stringify(this.dataUpdate).replace('_id', 'id'));
       this.ApiListService.updateMenuTopicLanding(this.dataUpdate, this.token).then((res) => {
         window.location.href = ''
+      }).catch((err) => {
+        this.countDel = true
       })
       this.myFormAddTopic.reset()
       this.errorMessenger = ''
@@ -562,17 +692,11 @@ export class AppComponent {
   updateMenuSubTopic() {
     let Menu: any = []
     this.dataUpdate = Object.assign({}, this._showDetail);
-    let isActive:boolean
-    let isRedirect:boolean
-    if(this.showCheck["isActive"] !== this._showDetail['isActive']){
-      isActive = this.showCheck["isActive"]
-    } else{
-      isActive = this._showDetail["isActive"]
-    }
-    if(this.showCheck["isRedirect"] !== this._showDetail['isRedirect']){
-      isRedirect = this.showCheck["isRedirect"]
-    } else{
-      isRedirect = this._showDetail["isRedirect"]
+    let isActive: boolean
+    if (this.showCheck["isActive"] !== this._showDetail['isActive']) {
+      isActive = this.showCheck["isActive"] || false
+    } else {
+      isActive = this._showDetail["isActive"] || false
     }
     Menu = {
       'keywords': this._showDetail['keywords'],
@@ -582,43 +706,65 @@ export class AppComponent {
         'type': this._showDetail['rules'][0]['type'],
       }],
       '_id': this._showDetail['_id'],//Not change _id to id
-      'menus': this._showDetail['menus'],//Not change _id to id
+      'menus': this._showDetail['menus'] || [],//Not change _id to id
       'outSubTopicName': this._showDetail['outSubTopicName'], //Not change outTopicName
       'outSubTopicId': this.myFormAddTopic.value.outSubTopicId || this._showDetail['outSubTopicId'],
       'topicGroup': this.myFormAddTopic.value.topicGroup || this._showDetail['topicGroup'],
       'priority': this.myFormAddTopic.value.priority || this._showDetail['priority'],
       'image': this.myFormAddTopic.value.image || this._showDetail['image'],
       'isActive': isActive,
-      'isRedirect':  isRedirect,
+      // 'isRedirect': isRedirect,
       'function': this.myFormAddTopic.value.function || this._showDetail['function'],
       'outUrl': this.myFormAddTopic.value.outUrl || this._showDetail['outUrl'],
       'json': this._showDetail['json'],
       '__v': this._showDetail['__v'],
     }
-    if(Menu['function'].match(/^ *$/) !== null){
+    // if (!!this.menusUpdate) {
+    //   Menu['menus'] = this.menusUpdate
+    // }
+    if (!!this.pushMenus) {
+      Menu['menus'].push(this.pushMenus)
+    }
+
+    if (Menu['function'] && Menu['function'].match(/^ *$/) !== null) {
       Menu['function'] = ''
     }
+
     if (!!this.myFormAddTopic.value.keywords) {
       Menu['keywords'] = [this.myFormAddTopic.value.keywords]
     }
+    console.log('Menu', Menu);
     Object.keys(Menu).forEach((Res: any) => {
       try {
-        this.dataUpdate[Res] = Menu[Res]
+        if (typeof (Menu[Res]) === 'boolean' || !!this.dataUpdate[Res] && Menu[Res]) {
+          this.dataUpdate[Res] = Menu[Res]
+        } else if (typeof (Menu[Res]) === 'boolean') {
+          this.dataUpdate[Res] = Menu[Res]
+        } else {
+          this.dataUpdate[Res] = Menu[Res] || ''
+        }
       } catch (err: any) {
         console.log('Resforeach', Res);
       }
     })
-    let data: any = sessionStorage.getItem('Detail')
-    this.checkDetail = JSON.parse(data)
-    this.countAdd = (JSON.stringify(this.dataUpdate) === JSON.stringify(this.checkDetail))
-    console.log(this.countAdd);
 
+    let data: any = sessionStorage.getItem('Detail')
+
+    this.checkDetail = JSON.parse(data)
+    delete this.checkDetail['json'];
+    delete this.checkDetail['__v'];
+    delete this.dataUpdate['__v'];
+    delete this.dataUpdate['json'];
+    // console.log('C.dataUpdate',this.dataUpdate);
+    // console.log('C.checkDetail',this.checkDetail);
+    console.log(JSON.stringify(this.dataUpdate) === JSON.stringify(this.checkDetail));
+    this.countAdd = (JSON.stringify(this.dataUpdate) === JSON.stringify(this.checkDetail))
     if (!this.countAdd) {
-      delete this.dataUpdate['__v'];
-      delete this.dataUpdate['json'];
       this.dataUpdate = JSON.parse(JSON.stringify(this.dataUpdate).replace('_id', 'id'));
       this.ApiListService.updateMenuSubTopicLanding(this.dataUpdate, this.token).then((res) => {
         window.location.href = ''
+      }).catch((err) => {
+        this.countDel = true
       })
       this.myFormAddTopic.reset()
       this.errorMessenger = ''
@@ -668,7 +814,7 @@ export class AppComponent {
     this.myFormAddTopic.reset()
   }
 
-  isCheck(velue:boolean,data:any){
+  isCheck(velue: boolean, data: any) {
     this.showCheck[data] = velue
   }
 }
